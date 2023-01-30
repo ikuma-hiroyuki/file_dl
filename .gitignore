@@ -1,0 +1,9 @@
+.idea/*
+
+*.sqlite3
+
+*.jpg
+
+__pycache__/
+
+venv/*
