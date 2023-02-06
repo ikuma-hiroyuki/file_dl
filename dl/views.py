@@ -1,4 +1,5 @@
 import mimetypes
+from pathlib import Path
 from urllib import parse
 
 from django.contrib import messages
@@ -15,14 +16,14 @@ app_name = 'dl'
 
 class FileUploadView(CreateView):
     model = UploadFile
-    fields = ['file', ]
+    fields = ['serial_number', 'file', ]
     template_name = 'dl/upload.html'
     success_url = reverse_lazy('list')
 
     def form_valid(self, form):
-        """ 投稿されたファイルのファイル名を取得して file_name 属性に格納する """
+        """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
         instance = form.save(commit=False)
-        instance.file_name = instance.file.name
+        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
         instance.save()
         messages.success(self.request, 'ファイルをアップロードしました。')
         return super().form_valid(form)
