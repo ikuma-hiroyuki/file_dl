@@ -4,16 +4,20 @@ from urllib import parse
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from dl.models import UploadFile
+
+app_name = 'dl'
 
 
 class FileUploadView(CreateView):
     model = UploadFile
     fields = ['file', ]
     template_name = 'dl/upload.html'
+    success_url = reverse_lazy('list')
 
     def form_valid(self, form):
         """ 投稿されたファイルのファイル名を取得して file_name 属性に格納する """
@@ -24,7 +28,7 @@ class FileUploadView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.request.path
+        return self.success_url
 
 
 class FileDownloadView(View):
@@ -39,3 +43,7 @@ class FileDownloadView(View):
         response['Content-Disposition'] = f"attachment; filename='{quoted_name}'; filename*=UTF-8''{quoted_name}"
 
         return response
+
+
+class FileListView(ListView):
+    model = UploadFile

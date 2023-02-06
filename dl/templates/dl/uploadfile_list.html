@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+</head>
+<body>
+{% for object in object_list %}
+    <p>ID: {{ object.id }}</p>
+    <p>file: {{ object.file }}</p>
+    <p>file_name: {{ object.file_name }}</p>
+    <p>serial_number: {{ object.serial_number }}</p>
+    <br>
+{% endfor %}
+</body>
+</html>
