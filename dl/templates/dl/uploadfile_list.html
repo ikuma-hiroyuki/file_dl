@@ -5,12 +5,32 @@
     <title>List</title>
 </head>
 <body>
+{% if object_list.count is 0 %}
+    <p>データなし</p>
+{% endif %}
+
+<a href="{% url 'upload' %}">
+    <button>アップロード</button>
+</a>
+
 {% for object in object_list %}
     <p>ID: {{ object.id }}</p>
     <p>file: {{ object.file }}</p>
+    <a href="{{ object.file.url }}" target="_blank">
+        <img src="{{ object.file.url }}" alt="" height="100">
+    </a>
     <p>file_name: {{ object.file_name }}</p>
     <p>serial_number: {{ object.serial_number }}</p>
-    <br>
+    <a href="{% url 'update' object.id %}">
+        <button>更新</button>
+    </a>
+    <a href="{% url 'delete' object.id %}">
+        <button>削除</button>
+    </a>
+    <a href="{% url 'download' object.id %}">
+        <button>ダウンロード</button>
+    </a>
+    <hr>
 {% endfor %}
 </body>
 </html>

@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from dl.models import UploadFile
 
@@ -48,3 +48,14 @@ class FileDownloadView(View):
 
 class FileListView(ListView):
     model = UploadFile
+
+
+class FileUpdateView(UpdateView):
+    model = UploadFile
+    fields = ['serial_number', 'file', ]
+    success_url = reverse_lazy('list')
+
+
+class FileDeleteView(DeleteView):
+    model = UploadFile
+    success_url = reverse_lazy('list')

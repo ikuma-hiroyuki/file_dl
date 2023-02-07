@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update</title>
+</head>
+<body>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>id: {{ form.id }}</p>
+        <p>file: {{ form.file }}</p>
+        <p>file_name: {{ form.file_name }}</p>
+        <p>serial_number: {{ form.serial_number }}</p>
+        <button type="submit">更新</button>
+        <a href="{% url 'list' %}">
+            <input type="button" value="リストに戻る">
+        </a>
+    </form>
+</body>
+</html>
