@@ -12,15 +12,20 @@
 <a href="{% url 'upload' %}">
     <button>アップロード</button>
 </a>
+<a href="{% url 'form_upload' %}">
+    <button>フォームでアップロード</button>
+</a>
+<hr>
 
 {% for object in object_list %}
     <p>ID: {{ object.id }}</p>
-    <p>file: {{ object.file }}</p>
+    <p>ファイル名: {{ object.file }}</p>
     <a href="{{ object.file.url }}" target="_blank">
         <img src="{{ object.file.url }}" alt="" height="100">
     </a>
-    <p>file_name: {{ object.file_name }}</p>
-    <p>serial_number: {{ object.serial_number }}</p>
+
+    <p>ダウンロード時に使うファイル名: {{ object.file_name }}</p>
+    <p>製造番号: {{ object.serial_number }}</p>
     <a href="{% url 'update' object.id %}">
         <button>更新</button>
     </a>
