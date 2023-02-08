@@ -6,4 +6,4 @@ from .models import UploadFile
 class UploadForm(forms.ModelForm):
     class Meta:
         model = UploadFile
-        fields = '__all__'
+        fields = ['serial_number', 'file', ]
