@@ -29,9 +29,11 @@
 {% for object in object_list %}
     <p>ID: {{ object.id }}</p>
     <p>ファイル名: {{ object.file }}</p>
-    <a href="{{ object.file.url }}" target="_blank">
-        <img src="{{ object.file.url }}" alt="" height="100">
-    </a>
+    {% if object.file %}
+        <a href="{{ object.file.url }}" target="_blank">
+            <img src="{{ object.file.url }}" alt="" height="100">
+        </a>
+    {% endif %}
 
     <p>ダウンロード時に使うファイル名: {{ object.file_name }}</p>
     <p>製造番号: {{ object.serial_number }}</p>
