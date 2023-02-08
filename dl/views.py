@@ -79,11 +79,12 @@ class FileDownloadView(View):
 
 
 class FileListView(ListView):
+    # template_name はモデル名_list.html
     model = UploadFile
-    # template_name はモデル名_form.html
 
 
 class FileUpdateView(UpdateView):
+    # template_name はモデル名_form.html
     model = UploadFile
     fields = ['serial_number', 'file', ]
     success_url = reverse_lazy('list')
