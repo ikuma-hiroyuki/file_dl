@@ -4,7 +4,7 @@ from urllib import parse
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
@@ -36,7 +36,7 @@ class FileUploadView(CreateView):
 class FileUploadViewByForm(CreateView):
     model = UploadFile
     template_name = 'dl/upload.html'
-    fields = '__all__'
+    fields = ['serial_number', 'file', ]
     success_url = reverse_lazy('list')
 
     def get_context_data(self, **kwargs):
@@ -94,3 +94,9 @@ class FileDeleteView(DeleteView):
     model = UploadFile
     success_url = reverse_lazy('list')
     # template_name はモデル名_confirm_delete.html
+
+
+def delete_func(request, pk):
+    instance = get_object_or_404(UploadFile, pk=pk)
+    instance.delete()
+    return redirect('list')
