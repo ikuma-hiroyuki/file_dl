@@ -15,18 +15,20 @@ from dl.models import UploadFile
 app_name = 'dl'
 
 
-def my_form_valid(cls, form):
-    """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
-    instance = form.save(commit=False)
-    if instance.file:
-        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
-    instance.save()
-    messages.success(cls.request,
-                     f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
-    return CreateView.form_valid(cls, form)
+class MyFormValidMixin:
+    def my_form_valid(self, form):
+        """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
+        instance = form.save(commit=False)
+        if instance.file:
+            instance.file_name = instance.serial_number + Path(instance.file.name).suffix
+        instance.save()
+        messages.success(self.request,
+                         f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
+        # return CreateView.form_valid(cls, form)
+        return super().form_valid(form)
 
 
-class FileUploadView(CreateView):
+class FileUploadView(MyFormValidMixin, CreateView):
     model = UploadFile
     fields = ['serial_number', 'file', ]
     template_name = 'dl/upload.html'
@@ -38,28 +40,30 @@ class FileUploadView(CreateView):
         return context
 
     def form_valid(self, form):
-        return my_form_valid(self, form)
+        return self.my_form_valid(form)
 
     def get_success_url(self):
         return self.success_url
 
 
-class FileUploadViewByForm(CreateView):
+class FileUploadViewByForm(MyFormValidMixin, CreateView):
+    form_class = UploadForm
     model = UploadFile
     template_name = 'dl/upload.html'
-    fields = ['serial_number', 'file', ]
+    # fields = ['serial_number', 'file', ]
     success_url = reverse_lazy('list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context = {
-            'form': UploadForm(),
-            'title': 'FileUploadViewByFormを使う'
-        }
+        # context = {
+        #     'form': UploadForm(),
+        #     'title': 'FileUploadViewByFormを使う'
+        # }
+        context['title'] = 'FileUploadViewByFormを使う'
         return context
 
     def form_valid(self, form):
-        return my_form_valid(self, form)
+        return self.my_form_valid(form)
 
     def get_success_url(self):
         return self.success_url
@@ -82,16 +86,17 @@ class FileDownloadView(View):
 class FileListView(ListView):
     # template_name はモデル名_list.html
     model = UploadFile
+    ordering = ['-id']
 
 
-class FileUpdateView(UpdateView):
+class FileUpdateView(MyFormValidMixin, UpdateView):
     # template_name はモデル名_form.html
     model = UploadFile
     fields = ['serial_number', 'file', ]
     success_url = reverse_lazy('list')
 
     def form_valid(self, form):
-        return my_form_valid(self, form)
+        return self.my_form_valid(form)
 
 
 class FileDeleteView(DeleteView):
@@ -101,6 +106,9 @@ class FileDeleteView(DeleteView):
 
 
 def delete_func(request, pk):
+    if request.method != 'POST':
+        messages.warning(request, 'POSTメソッドでアクセスしてください。')
+        return redirect('list')
     instance = get_object_or_404(UploadFile, pk=pk)
     instance.delete()
     messages.success(request, f'{instance.file.name}を削除しました。')

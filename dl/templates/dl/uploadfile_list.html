@@ -43,7 +43,11 @@
     <a href="{% url 'delete' object.id %}">
         <button>削除</button>
     </a>
-    <a href="{% url 'delete_func' object.id %}">いきなり削除</a>
+    <form method="post" action="{% url 'delete_func' object.id %}">
+        {% csrf_token %}
+        <input type="submit" value="いきなり削除">
+    </form>
+{#    <a href="{% url 'delete_func' object.id %}">いきなり削除</a>#}
     <a href="{% url 'download' object.id %}">
         <button>ダウンロード</button>
     </a>
