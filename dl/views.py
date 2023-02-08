@@ -31,6 +31,11 @@ class FileUploadView(CreateView):
     template_name = 'dl/upload.html'
     success_url = reverse_lazy('list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'FileUploadViewを使う'
+        return context
+
     def form_valid(self, form):
         return my_form_valid(self, form)
 
@@ -48,7 +53,7 @@ class FileUploadViewByForm(CreateView):
         context = super().get_context_data(**kwargs)
         context = {
             'form': UploadForm(),
-            'title': 'forms.pyのUploadFormを使う'
+            'title': 'FileUploadViewByFormを使う'
         }
         return context
 
