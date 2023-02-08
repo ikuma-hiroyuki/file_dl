@@ -5,6 +5,15 @@
     <title>List</title>
 </head>
 <body>
+
+<div id="meesages">
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
+
 {% if object_list.count is 0 %}
     <p>データなし</p>
 {% endif %}
