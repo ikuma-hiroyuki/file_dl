@@ -15,6 +15,16 @@ from dl.models import UploadFile
 app_name = 'dl'
 
 
+def my_form_valid(cls, form):
+    """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
+    instance = form.save(commit=False)
+    instance.file_name = instance.serial_number + Path(instance.file.name).suffix
+    instance.save()
+    messages.success(cls.request,
+                     f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
+    return CreateView.form_valid(cls, form)
+
+
 class FileUploadView(CreateView):
     model = UploadFile
     fields = ['serial_number', 'file', ]
@@ -22,12 +32,7 @@ class FileUploadView(CreateView):
     success_url = reverse_lazy('list')
 
     def form_valid(self, form):
-        """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
-        instance = form.save(commit=False)
-        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
-        instance.save()
-        messages.success(self.request, 'ファイルをアップロードしました。')
-        return super().form_valid(form)
+        return my_form_valid(self, form)
 
     def get_success_url(self):
         return self.success_url
@@ -48,11 +53,7 @@ class FileUploadViewByForm(CreateView):
         return context
 
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
-        instance.save()
-        messages.success(self.request, 'ファイルをアップロードしました。')
-        return super().form_valid(form)
+        return my_form_valid(self, form)
 
     def get_success_url(self):
         return self.success_url
@@ -83,11 +84,7 @@ class FileUpdateView(UpdateView):
     success_url = reverse_lazy('list')
 
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
-        instance.save()
-        messages.success(self.request, 'ファイルをアップロードしました。')
-        return super().form_valid(form)
+        return my_form_valid(self, form)
 
 
 class FileDeleteView(DeleteView):
@@ -99,4 +96,5 @@ class FileDeleteView(DeleteView):
 def delete_func(request, pk):
     instance = get_object_or_404(UploadFile, pk=pk)
     instance.delete()
+    messages.success(request, f'{instance.file.name}を削除しました。')
     return redirect('list')
