@@ -18,7 +18,8 @@ app_name = 'dl'
 def my_form_valid(cls, form):
     """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
     instance = form.save(commit=False)
-    instance.file_name = instance.serial_number + Path(instance.file.name).suffix
+    if instance.file:
+        instance.file_name = instance.serial_number + Path(instance.file.name).suffix
     instance.save()
     messages.success(cls.request,
                      f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
