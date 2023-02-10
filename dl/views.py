@@ -3,7 +3,7 @@ from pathlib import Path
 from urllib import parse
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -50,20 +50,16 @@ class FileUploadViewByForm(MyFormValidMixin, CreateView):
     form_class = UploadForm
     model = UploadFile
     template_name = 'dl/upload.html'
-    # fields = ['serial_number', 'file', ]
     success_url = reverse_lazy('list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context = {
-        #     'form': UploadForm(),
-        #     'title': 'FileUploadViewByFormを使う'
-        # }
         context['title'] = 'FileUploadViewByFormを使う'
         return context
 
     def form_valid(self, form):
-        return self.my_form_valid(form)
+        form.my_form_valid(self.request)
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return self.success_url
