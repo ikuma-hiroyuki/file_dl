@@ -58,7 +58,9 @@ class FileUploadViewByForm(MyFormValidMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        form.my_form_valid(self.request)
+        instance = form.my_form_valid(self.request)
+        messages.success(self.request,
+                         f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
