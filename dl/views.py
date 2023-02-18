@@ -3,7 +3,7 @@ from pathlib import Path
 from urllib import parse
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -16,6 +16,9 @@ app_name = 'dl'
 
 
 class MyFormValidMixin:
+    def __init__(self):
+        self.request = None
+
     def my_form_valid(self, form):
         """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
         instance = form.save(commit=False)
@@ -24,7 +27,6 @@ class MyFormValidMixin:
         instance.save()
         messages.success(self.request,
                          f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
-        # return CreateView.form_valid(cls, form)
         return super().form_valid(form)
 
 
@@ -46,7 +48,7 @@ class FileUploadView(MyFormValidMixin, CreateView):
         return self.success_url
 
 
-class FileUploadViewByForm(MyFormValidMixin, CreateView):
+class FileUploadViewByForm(CreateView):
     form_class = UploadForm
     model = UploadFile
     template_name = 'dl/upload.html'
@@ -58,10 +60,10 @@ class FileUploadViewByForm(MyFormValidMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        instance = form.my_form_valid(self.request)
+        instance = form.my_form_valid()
         messages.success(self.request,
                          f'{instance.file.name}をアップロードしてダウンロード時のファイル名を{instance.file_name}にしました。')
-        return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.success_url
@@ -87,20 +89,21 @@ class FileListView(ListView):
     ordering = ['-id']
 
 
-class FileUpdateView(MyFormValidMixin, UpdateView):
+class FileUpdateView(UpdateView):
     # template_name はモデル名_form.html
     model = UploadFile
-    fields = ['serial_number', 'file', ]
+    form_class = UploadForm
     success_url = reverse_lazy('list')
 
     def form_valid(self, form):
-        return self.my_form_valid(form)
+        form.my_form_valid()
+        return super().form_valid(form)
 
 
 class FileDeleteView(DeleteView):
+    # template_name はモデル名_confirm_delete.html
     model = UploadFile
     success_url = reverse_lazy('list')
-    # template_name はモデル名_confirm_delete.html
 
 
 def delete_func(request, pk):
