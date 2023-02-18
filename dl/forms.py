@@ -10,7 +10,7 @@ class UploadForm(forms.ModelForm):
         model = UploadFile
         fields = ['serial_number', 'file', ]
 
-    def my_form_valid(self, request):
+    def my_form_valid(self):
         """ 投稿されたファイルのファイル名 serial_numberに変更して file_name 属性に格納する """
         instance = self.save(commit=False)
         if instance.file:
@@ -18,5 +18,3 @@ class UploadForm(forms.ModelForm):
         instance.save()
 
         return instance
-        # return CreateView.form_valid(cls, form)
-        # return super().form_valid(self)
