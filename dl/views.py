@@ -9,8 +9,10 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from config.settings import MEDIA_ROOT
 from dl.forms import UploadForm
 from dl.models import UploadFile
+from dl.utils import tiff_to_jpeg_on_memory
 
 app_name = 'dl'
 
@@ -114,3 +116,14 @@ def delete_func(request, pk):
     instance.delete()
     messages.success(request, f'{instance.file.name}を削除しました。')
     return redirect('list')
+
+
+class TiffToJpegView(View):
+    def get(self, request, *args, **kwargs):
+        file_path = Path(MEDIA_ROOT) / 'images' / kwargs['file_name']
+        if file_path.suffix in '.tif':
+            jpeg_buffer = tiff_to_jpeg_on_memory(file_path)
+            return HttpResponse(jpeg_buffer, content_type='image/jpeg')
+        else:
+            with open(file_path, 'rb') as f:
+                return HttpResponse(f.read(), content_type='image/jpeg')

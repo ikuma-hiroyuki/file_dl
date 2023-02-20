@@ -12,4 +12,6 @@ urlpatterns = [
     path('update/<int:pk>/', views.FileUpdateView.as_view(), name='update'),
     path('delete/<int:pk>/', views.FileDeleteView.as_view(), name='delete'),
     path('deletefunc/<int:pk>/', views.delete_func, name='delete_func'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('tiff/<str:file_name>/', views.TiffToJpegView.as_view(), name='tiff_to_jpeg'),
+]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
